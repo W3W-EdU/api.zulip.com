@@ -2,7 +2,9 @@ package hudson.plugins.mantis;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -154,16 +156,18 @@ final class Updater {
 
         for (ChangeLogSet<? extends Entry> set : RunScmChangeExtractor.getChanges(build)) {
             for (Entry change : set) {
-                final Matcher matcher = pattern.matcher(change.getMsg());
+            	Set<Integer> ids = new HashSet<Integer>();
+            	final Matcher matcher = pattern.matcher(change.getMsg());
                 while (matcher.find()) {
-                    int id;
                     try {
-                        id = Integer.parseInt(matcher.group(1));
+                        ids.add(Integer.parseInt(matcher.group(1)));
                     } catch (final NumberFormatException e) {
                         // if id is not number, skip
                         LOGGER.log(Level.WARNING, Messages.Updater_IllegalMantisId(matcher.group(1)));
                         continue;
                     }
+                }
+                for(int id: ids){
                     changeSets.add(ChangeSetFactory.newInstance(id, scm, change));
                 }
             }
