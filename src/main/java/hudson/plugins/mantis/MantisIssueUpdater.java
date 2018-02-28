@@ -3,6 +3,7 @@ package hudson.plugins.mantis;
 import java.io.IOException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Extension;
@@ -28,25 +29,51 @@ import net.sf.json.JSONObject;
  */
 public final class MantisIssueUpdater extends Recorder implements SimpleBuildStep {
 
-    private final boolean keepNotePrivate;
+    private boolean keepNotePrivate;
 
-    private final boolean recordChangelog;
+    private boolean recordChangelog;
+    private String version;
 
     private SCM scm;
 
     @DataBoundConstructor
-    public MantisIssueUpdater(final boolean keepNotePrivate, final boolean recordChangelog, SCM scm) {
-        this.keepNotePrivate = keepNotePrivate;
-        this.recordChangelog = recordChangelog;
-        this.scm = scm;
+    public MantisIssueUpdater() {
     }
 
-    public boolean isKeepNotePrivate() {
+    @DataBoundSetter
+    public void setVersion(String version) {
+    	this.version = version;
+    }
+
+    @DataBoundSetter
+    public void setKeepNotePrivate(boolean keepNotePrivate) {
+    	this.keepNotePrivate = keepNotePrivate;
+    }
+    
+    @DataBoundSetter
+    public void setRecordChangelog(boolean recordChangelog) {
+    	this.recordChangelog = recordChangelog;
+    }
+
+    @DataBoundSetter
+    public void setSCM(SCM scm) {
+    	this.scm = scm;
+    }
+
+    public boolean getKeepNotePrivate() {
         return keepNotePrivate;
     }
 
-    public boolean isRecordChangelog() {
+    public boolean getRecordChangelog() {
         return recordChangelog;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public SCM getSCM() {
+        return scm;
     }
 
     @Override
@@ -62,11 +89,11 @@ public final class MantisIssueUpdater extends Recorder implements SimpleBuildSte
             return;
         } else if (run instanceof AbstractBuild<?, ?>) {
             AbstractBuild<?, ?> abstractBuild = (AbstractBuild<?, ?>) run;
-            final Updater updater = new Updater(abstractBuild.getParent().getScm(), isKeepNotePrivate(),
-                    isRecordChangelog());
+            final Updater updater = new Updater(abstractBuild.getParent().getScm(), getKeepNotePrivate(),
+                    getRecordChangelog(), getVersion());
             updater.perform(run, listener);
         } else {
-            final Updater updater = new Updater(scm, isKeepNotePrivate(), isRecordChangelog());
+            final Updater updater = new Updater(scm, getKeepNotePrivate(), getRecordChangelog(), getVersion());
             updater.perform(run, listener);
         }
     }

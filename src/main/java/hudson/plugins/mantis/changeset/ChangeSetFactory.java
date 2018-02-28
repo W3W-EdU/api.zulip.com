@@ -1,6 +1,6 @@
 package hudson.plugins.mantis.changeset;
 
-import hudson.model.Hudson;
+import jenkins.model.Jenkins;
 import hudson.scm.CVSChangeLogSet;
 import hudson.scm.SCM;
 import hudson.scm.SubversionChangeLogSet;
@@ -27,7 +27,7 @@ public final class ChangeSetFactory {
             throw new IllegalArgumentException();
         }
 
-        final Hudson hudson = Hudson.getInstance();
+        final Jenkins hudson = Jenkins.getInstance();
 
         // CVS
         if (hudson.getPlugin("cvs") != null && entry instanceof CVSChangeLogSet.CVSChangeLog) {

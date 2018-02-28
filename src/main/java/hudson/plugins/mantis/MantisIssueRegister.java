@@ -89,7 +89,7 @@ public final class MantisIssueRegister extends Recorder {
             return true;
         }
         
-        build.getActions().add(new MantisRegisterAction(site, no));
+        build.addAction(new MantisRegisterAction(site, no));
         
         return true;
     }

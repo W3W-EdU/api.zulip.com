@@ -18,7 +18,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
+import jenkins.model.Jenkins;
 import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
@@ -303,7 +303,7 @@ public final class MantisProjectProperty extends JobProperty<Job<?, ?>> {
                 @QueryParameter("m.password") String password, @QueryParameter("m.basicUserName") String basicUserName,
                 @QueryParameter("m.basicPassword") String basicPassword) throws IOException, ServletException {
             // only administrator allowed
-            Hudson.getInstance().checkPermission(Hudson.ADMINISTER);
+            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
 
             if (url == null) {
                 return FormValidation.error(Messages.MantisProjectProperty_MantisUrlMandatory());

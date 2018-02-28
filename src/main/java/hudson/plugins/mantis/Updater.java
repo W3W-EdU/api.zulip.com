@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import hudson.model.Hudson;
+import jenkins.model.Jenkins;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -31,11 +31,13 @@ final class Updater {
     private SCM scm;
     private boolean keepNotePrivate;
     private boolean recordChangeNote;
+    private String version;
 
-    Updater(final SCM scm, boolean keepNotePrivate, boolean recordChangeNote) {
+    Updater(final SCM scm, boolean keepNotePrivate, boolean recordChangeNote, String version) {
         this.scm = scm;
         this.keepNotePrivate = keepNotePrivate;
         this.recordChangeNote = recordChangeNote;
+        this.version = version;
     }
 
     boolean perform(final Run<?, ?> build, final TaskListener listener) {
@@ -49,7 +51,7 @@ final class Updater {
             return true;
         }
 
-        final String rootUrl = Hudson.getInstance().getRootUrl();
+        final String rootUrl = Jenkins.getInstance().getRootUrl();
         if (rootUrl == null) {
             Utility.log(logger, Messages.Updater_NoHudsonUrl());
             build.setResult(Result.FAILURE);
@@ -78,8 +80,18 @@ final class Updater {
             try {
                 final MantisIssue issue = site.getIssue(changeSet.getId());
                 if (update) {
-                    final String text = createUpdateText(build, changeSet, rootUrl);
+                    final String text = createUpdateText(build, changeSet, rootUrl, version);
                     site.updateIssue(changeSet.getId(), text, keepNotePrivate);
+                    
+                    if (version != null && version.length() > 0) {
+                    	try {
+                    		site.setFixedInVersion(changeSet.getId(), version);
+                    	}
+                    	catch (final MantisHandlingException e) {
+                            Utility.log(logger, Messages.Updater_FailedToSetFixedVersion(changeSet, e.getMessage()));
+                    	}
+                    }
+                    
                     Utility.log(logger, Messages.Updater_Updating(changeSet.getId()));
                 }
                 issues.add(issue);
@@ -96,7 +108,7 @@ final class Updater {
         return true;
     }
 
-    private String createUpdateText(final Run<?, ?> build, final ChangeSet changeSet, final String rootUrl) {
+    private String createUpdateText(final Run<?, ?> build, final ChangeSet changeSet, final String rootUrl, String version) {
         final String prjName = build.getParent().getName();
         final int prjNumber = build.getNumber();
         final String url = rootUrl + build.getUrl();
@@ -105,6 +117,11 @@ final class Updater {
         text.append(Messages.Updater_IssueIntegrated(prjName, prjNumber, url));
         text.append(CRLF).append(CRLF);
 
+        if (version != null && version.length() > 0) {
+        	text.append(version);
+            text.append(CRLF).append(CRLF);
+        }
+        
         if (recordChangeNote) {
             text.append(changeSet.createChangeLog());
         }

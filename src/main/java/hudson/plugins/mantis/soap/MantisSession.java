@@ -15,6 +15,8 @@ public interface MantisSession {
 
     void addNote(final int id, final MantisNote note) throws MantisHandlingException;
 
+    void setFixedInVersion(final int id, final String version) throws MantisHandlingException;
+
     String getVersion() throws MantisHandlingException;
 
     MantisIssue getIssue(final int id) throws MantisHandlingException;

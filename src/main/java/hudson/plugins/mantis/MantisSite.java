@@ -175,6 +175,11 @@ public final class MantisSite {
         return session.getIssue(id);
     }
 
+    public void setFixedInVersion(final int id, final String version) throws MantisHandlingException {
+        MantisSession session = createSession();
+    	session.setFixedInVersion(id, version);
+    }
+    
     public void updateIssue(final int id, final String text, final boolean keepNotePrivate)
             throws MantisHandlingException {
 

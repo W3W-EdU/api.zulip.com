@@ -164,4 +164,16 @@ public final class MantisSessionImpl extends AbstractMantisSession {
     }
 
     private static final Logger LOGGER = Logger.getLogger(MantisSessionImpl.class.getName());
+
+	@Override
+	public void setFixedInVersion(int id, String version) throws MantisHandlingException {
+        try {
+            final IssueData data = portType.mc_issue_get(site.getUserName(), site.getPlainPassword(), BigInteger.valueOf(id));
+            data.setFixed_in_version(version);
+        	
+        	portType.mc_issue_update(site.getUserName(), site.getPlainPassword(), BigInteger.valueOf(id), data);
+        } catch (final RemoteException e) {
+            throw new MantisHandlingException(e);
+        }
+	}
 }

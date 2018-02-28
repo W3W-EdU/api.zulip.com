@@ -12,4 +12,7 @@
     ${%Record changelog to note}
         </label>
     </f:entry>
+    <f:entry title="Fixed in version" field="version">
+        <f:textbox value="${instance.version}" />
+    </f:entry>      
 </j:jelly>

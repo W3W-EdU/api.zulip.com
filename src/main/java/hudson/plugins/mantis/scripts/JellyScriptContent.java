@@ -1,7 +1,7 @@
 package hudson.plugins.mantis.scripts;
 
 import hudson.model.AbstractBuild;
-import hudson.model.Hudson;
+import jenkins.model.Jenkins;
 import hudson.model.Result;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,7 +51,7 @@ public class JellyScriptContent implements ScriptContent {
 
     private InputStream getTemplateInputStream(String templateName) throws FileNotFoundException {
         // $JENKINS_HOME/mantis/scripts/templates/
-        File templatesFolder = new File(Hudson.getInstance().getRootDir(), "mantis/scripts/templates/descriptions");
+        File templatesFolder = new File(Jenkins.getInstance().getRootDir(), "mantis/scripts/templates/descriptions");
         File templateFile = new File(templatesFolder, templateName + ".jelly");
         if (templateFile.exists()) {
             return new FileInputStream(templateFile);
@@ -96,7 +96,7 @@ public class JellyScriptContent implements ScriptContent {
         context.setVariable("it", it);
         context.setVariable("build", build);
         context.setVariable("project", build.getParent());
-        context.setVariable("rooturl", Hudson.getInstance().getRootUrl());
+        context.setVariable("rooturl", Jenkins.getInstance().getRootUrl());
         return context;
     }
     
